@@ -1,0 +1,214 @@
+/* ## General styles */
+/* This stuff can be ported from experiment to experiment.*/
+
+/* We want the page to sit flush inside the browser window - that means no margins or padding. Also, use a nice-looking serif font. */
+body {
+	padding: 0;
+	margin: 0;
+	font-family: Palatino Linotype, Bookman Antiqua, Palatino, serif;
+	font-size: 16px;
+	line-height: 20px;
+  touch-action: manipulation;
+}
+
+.bottom-left {
+  position: absolute;
+  bottom: 5%;
+  left: 10%;
+
+}
+
+
+#Progress_Status { 
+  width: 50%; 
+  background-color: #ddd; 
+} 
+
+.ImageContainer {
+ /*border-style: groove;
+ border-width: thick;
+ border-color: blue; */
+}
+
+#myprogressBar { 
+  width: 1%; 
+  height: 35px; 
+  background-color: #4CAF50; 
+  text-align: center; 
+  line-height: 32px; 
+  color: black; 
+} 
+.centered {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+}
+.bottom-right {
+  position: absolute;
+  bottom: 5%;
+  right: 10%;
+}
+
+/* We manage display using "slides". A slide is a <code>div</code> that takes up the entire page. Only one slide should be visible at a time. Navigation between slides is most sensibly accomplished using using buttons, rather than keyboard events. */
+.slide {
+	width: 95%;
+	height: 95%;
+	display: none;
+	position: absolute;
+	margin: 0;
+	margin-left: 0.5%;
+	padding: 1% 2% 1% 2%;
+}
+
+input, select, button {font-family: Georgia, serif; font-size: 14px;}
+
+button {
+	border: 1px solid #999;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	margin: 10px;
+	padding-left: 10px;
+  padding-right: 10px;
+	height: 29px;
+	min-width: 70px;
+  font-size:15px;
+	touch-action: manipulation;
+}
+button:active {
+	border-left: 1px solid #c9c9c9;
+	border-top: 1px solid #c9c9c9;
+	background: none;
+	background-color: #c9c9c9;
+}
+
+button[disabled] {
+	border: 1px solid #999;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	cursor: not-allowed;
+}
+
+
+
+
+/* ## Experiment-specific styles */
+/* This stuff will vary by experiment. */
+
+#logo-text {
+  font-weight: bold;
+}
+
+#intro {
+  text-align: center;
+}
+
+.block-text {
+  width: 500px;
+  margin: 0 auto;
+  margin-bottom: 0.5em;
+}
+
+#legal {
+  margin: 0 auto;
+  margin-top: 1.5em;
+  font-size: 0.8em;
+}
+
+#number {
+  font-size: 42px;
+  font-family: Arial, sans-serif;
+  margin: 0 auto;
+  text-align: center;
+  width: 100px;
+  margin-top: 100px;
+}
+
+.grid { margin:1em auto; border-collapse:collapse }
+.grid.small td {
+    cursor:pointer;
+    width:50px; height:50px;
+    border:2px solid;
+    text-align:center;
+    font-family:sans-serif; font-size:16px;
+    float:left;
+    
+}
+
+.grid td {
+    cursor:pointer;
+    width:70px; height:70px;
+    border:2px solid;
+    text-align:center;
+    font-family:sans-serif; font-size:16px;
+    float:left;
+    touch-action: manipulation;
+    
+}
+
+.grid.yellow td.clicked{
+    background-color:yellow;
+}
+
+.grid.green td.clicked{
+    background-color:green;
+}
+
+.grid.purple td.clicked{
+    background-color:purple;
+}
+
+.grid.pink td.clicked{
+    background-color:pink;
+}
+
+.grid.blue td.clicked{
+    background-color:blue;
+}
+
+.grid.orange td.clicked{
+    background-color:orange;
+}
+.grid.lime td.clicked{
+    background-color:lime;
+}
+.grid.teal td.clicked{
+    background-color:teal;
+}
+.grid.navy td.clicked{
+    background-color:navy;
+}
+.grid.maroon td.clicked{
+    background-color:maroon;
+}
+.grid.olive td.clicked{
+    background-color:olive;
+}
+.grid.aqua td.clicked{
+    background-color:aqua;
+}
+
+.grid.red td.clicked{
+    background-color:red;
+}
+
+.clicked{
+    background-color:yellow;
+}
+
+#mydiv {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    border: 1px solid #d3d3d3;
+    text-align: center;
+}
+
+#mydivheader {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+}

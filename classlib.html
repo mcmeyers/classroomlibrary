@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<!-- load important things like jquery and mturk and style sheet, setup -->
+<head>
+	<title>Classroom Library System</title>
+	<script src="mmturkey-0.6.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="style.css" />
+</head>
+
+<!-- load sound effect files -->
+<audio id="ding" src="sounds/ding.m4a"></audio>
+<audio id="errorSound" src="sounds/error.mp3"></audio>
+
+
+
+<!-- MAIN HOMEPAGE -->
+<div class="slide" id="main">
+	<div style="text-align: center;  padding: 20px 15px 10px 10px">
+		<p class="block-text">Classroom Library System </p>
+		<div id="datetime"></div> 
+
+		<button id="checkinB" type="button" onclick="this.blur(), experiment.checkInput(); ">Checkin a Book</button> 
+		<button id="checkoutB" type="button" onclick="this.blur(), experiment.checkInput(); ">Checkout a Book</button> 
+
+	</div>
+</div>
+
+
+
+<!-- CHECKOUT PAGE-->
+<div class="slide" id="checkout">
+	<p class="block-text">Book Checkout Page</p> 
+
+	<div id="Search"></div> 
+	<p class="block-text">
+			Title:<br>
+			<input type="text" id="title" name="title" size="30">
+		</p>
+	<p class="block-text">
+			Author:<br>
+			<input type="text" id="author" name="author" size="30">
+		</p>
+
+	<div id="Result"></div> 
+	<!-- put in table here? -->
+
+	<div id="User"></div> 
+	<!-- put in table as well? or list of users? -->
+
+		<!-- buttons -->
+		<div style="text-align: center">
+			<button type="button" onclick="this.blur(); experiment.checkGrid('t1Input', 't1Target', '#checkInput'); experiment.sparkle();">Return to Homepage</button>
+			<button type="button" onclick="this.blur(); experiment.checkGrid('t1Input', 't1Target', '#checkInput'); experiment.sparkle();">Submit</button>
+	</div>
+</div>
+
+<!--CHECKIN PAGES-->
+<!-- FIRST -->
+<center>
+<div class="slide" id="checkoutUser">
+	<div id="user">Choose a User to Checkout to</div> 
+	<!-- make lots of buttons with class list (how easily do this? with csv file?)--> 
+	<button type="button" onclick="this.blur(); experiment.begin();">Return to Homepage</button>
+
+</div>
+</center>
+
+<center>
+<div class="slide" id="checkoutBook">
+	<div id="username"></div> 
+
+<!-- MAKE DRAGGY PLACES-->
+	<div id="return">Return Book</div> 
+	<div id="lost">Lost Book</div> 
+
+
+	<button type="button" onclick="this.blur(); experiment.begin();">Return to Users</button>
+	<button type="button" onclick="this.blur(); experiment.begin();">Return to Homepage</button>
+
+
+</div>
+</center>
+
+
+
+<!--BLANK SLIDE -->
+<div class="slide" id="blank">
+</div>
+
+
+<!--connects to javascript file which has actual experiment code on it. This line of info is very important and without it none of your functions will run. They are all written in a separate file for clarity and stuff. -->
+<script src="jquery-1.11.2.min.js"></script>
+<script src="classlib.js"></script> <!--CHANGE TO ILL_OBFU ON TURK WHEN READY -->
+
+
+
+</body>
+</html>
