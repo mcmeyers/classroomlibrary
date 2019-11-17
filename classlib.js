@@ -56,160 +56,7 @@ function clearTimer(display){
   }, 1000);
 }
 
-var participants= "";
-
-function runCondition(people) {
-  if(people == "turk"){ //if running study on Mturk, want to read in data normally and take next available row 
-    //also want to change so here in the child coniditon you don't see the input slide, only in other condition
-    experiment.condition= "adult";
-    participants = "turk";
-    showSlide("intro_adult");
-  }
-  //if you are NOT running the mturk condition
-  if(people == "child"){
-    participants = "child";
-    experiment.condition = "child";
-    showSlide("intro_child");
-  } 
-  //want to only take in available row based on the condition you are in -- in child condition, only take in available adult rows; in adult condition, only take in available child rows
-  experiment.uniqueTurker(); 
-}
-
-//generates a random id for subject
-function randId() {
-  return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
-}
-
-
-var unique_id = 0;  
-var ip = 0; 
-//gets IP address of user (temporary ID so when mturk page refreshes it doesn't mess everything up)
-function getIP(){
-  tmp = $.getJSON("https://api.ipify.org?format=jsonp&callback=?",
-      function(json) {
-      });
-  tmp.done(function(data){
-    ip = data.ip; 
-
-    if(turk.assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //if person has not accepted HIT
-      document.getElementById("notAccepted").innerHTML= "Please accept the HIT to Begin!!";
-      experiment.reserveDate(ip, ip); //if assignment has not been accepted, unique_id = ip address and ip = ip address
-    }
-     else { //if person has accepted HIT
-      unique_id = randId(); 
-      experiment.reserveDate(unique_id, ip); //if assignment has been accepted, unique_id = rand int and ip = ip address
-    } 
-  });
-}
-
-//EXPERIMENT SETUP 
-
-
-//creates initial seed grids; just in case although these should be read in from the Google Sheet 
-
-var train1 = [[1,1,0,0,0,0,0,0],
-              [1,1,0,0,0,0,0,0],
-              [1,1,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,1,1],
-              [0,0,0,0,0,0,1,1],
-              [0,0,0,0,0,0,0,0]];
-
-var train2 = [[1,0,0,0,0,0,0,0],
-              [0,1,0,0,0,0,0,0],
-              [0,0,1,0,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,0,1,0,0,0],
-              [0,0,0,0,0,1,0,0],
-              [0,0,0,0,0,0,1,0],
-              [0,0,0,0,0,1,1,1]];
-
-var train3 = [[0,0,0,1,1,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [1,1,1,1,1,1,1,1]];
-
-var trial1 = [[1,1,0,1,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,0,0,1,0,0],
-              [1,0,0,0,0,1,0,0],
-              [0,0,0,0,1,0,0,0],
-              [0,0,0,0,0,0,1,0],
-              [0,0,0,0,0,0,0,0]];
-
-var trial2 = [[1,0,0,0,0,0,0,0],
-              [0,0,1,0,0,0,1,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,1,0,1,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,1,1,0,0,1],
-              [0,0,1,0,0,0,0,0]];
-
-var trial3 = [[1,0,1,0,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,1,0,0,0,0,1],
-              [0,0,0,0,0,0,0,0],
-              [0,1,0,0,1,1,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,0,0,0,1,0]];
-
-var trial4 = [[0,0,0,0,0,0,0,0],
-              [0,0,0,0,1,0,0,0],
-              [1,0,0,0,0,1,0,0],
-              [0,1,1,1,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,1,0,0,0,0,0],
-              [0,0,0,0,1,0,0,0],
-              [0,0,1,1,0,0,0,0]];
-
-var trial5 = [[0,0,1,0,0,0,0,1],
-              [0,1,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,1,0,0,0,0],
-              [0,0,0,0,1,0,1,0],
-              [0,0,0,0,1,1,0,0]];
-
-var trial6 = [[1,0,0,0,0,0,1,0],
-              [1,0,0,1,0,0,1,0],
-              [0,0,0,0,0,0,0,1],
-              [1,0,0,0,0,1,0,0],
-              [0,0,0,0,0,1,1,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0]];
-
-//for storing data
-var dataArray= [[0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0]];
-
-var targetArray= [[0,0,0,0,0,0,0,0], 
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0]];
-
-//for random order of trials
-var displayNum= [1, 2, 3, 4, 5, 6]; 
-var trialNames = [trial1, trial2, trial3, trial4, trial5, trial6];
+//SYSTEM SETUP 
 
 //inputs sounds 
 var ding = document.getElementById("ding");
@@ -229,11 +76,11 @@ var timer;
 //MAIN EXPERIMENT
 var experiment = {
 
+
   ////////VARIABLES
 
   //bkgd
   subid: Math.random(1,100), 
-  unique_id: randId(),
   subage:0,
   generation:1,
   date: getCurrentDate(),
@@ -258,23 +105,6 @@ var experiment = {
   timeUsed:0, //time used from timer
 
   ////////FUNCTIONS 
-uniqueTurker: function(){
-  if(participants == "turk"){
-    var ut_id = "53ae4ea04173428d22d2c34c58eca39a";
-    if (UTWorkerLimitReached(ut_id)) {
-      console.log("not unique");
-        document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
-    } else { 
-      getIP(); 
-      console.log("unique");
-    }
-  } else { 
-    getIP(); 
-    console.log("unique");
-  } 
-},
-
-
   reserveDate: function(unique_id, ip) {
     console.log(unique_id); 
     console.log(ip);
@@ -330,19 +160,7 @@ uniqueTurker: function(){
     experiment.startTrain();
   },
 
-  //function to create grid from string
-  createGrid: function(data) {
-    var oneRow = [];
-    var newArray = [];
-    array = data.split(" ");
-    for(var i=0; i<array.length;i++) array[i] = +array[i]; 
-    for (i=0; i<8; i++){
-      oneRow = array.slice(8*i, (8*i+8));
-      newArray.push(oneRow); 
-    }
-    return(newArray);  
-  },
-
+  
   //takes in data read from Google Sheet and creates correct target grids from it 
   changeTargets: function(){
     for(i=0; i<7; i++){
@@ -389,52 +207,6 @@ uniqueTurker: function(){
     };
     console.log(trialNames);
     return trialNames; 
-  },
-
-  //function that gives us a random display number 
-  getRandomDisplay: function() {
-   var randomIndex = Math.floor(Math.random()*displayNum.length);
-   return displayNum.splice(randomIndex, 1)[0];
-  }, 
-
-  //makes limit of highlighted cells 10; highlights clicked cells; displays correct values in block counter  
-  max10items: function(clicked,input){
-    var i; 
-    var rowIndex = 0; 
-    var cellIndex = 0; 
-    var count = 0;
-    //highlighs clicked cell
-    $(clicked).toggleClass("clicked");
-    document.getElementById("button").style.backgroundColor = "white";
-
-    //checks through grid to count how many cells are selected, disables selecting if there are 10 selected already
-    for(i=0; i<64; i++){
-      var gridElement = document.getElementById(input).rows[rowIndex].cells[cellIndex];
-      if (gridElement.className == "clicked"){
-        count++;
-        if(count < 11){
-        document.querySelector('#blocksLeft').textContent = 10-count; 
-        }if (count > 10) {
-        document.querySelector('#blocksLeft').textContent = 0;
-        clicked.classList.remove("clicked");
-        errorSound.play();
-        } if(document.querySelector('#blocksLeft').textContent == 0){
-          document.getElementById("button").style.backgroundColor = "lime";
-        } 
-      }    
-      cellIndex++;
-      if(cellIndex == 8) {
-        rowIndex++;
-        if(rowIndex == 8){
-          return; 
-        } else{
-          cellIndex = 0;
-        } 
-      }
-      if(count == 0){
-        document.querySelector('#blocksLeft').textContent = 10; 
-      }
-    }
   },
 
   //starts training session 1 
@@ -520,30 +292,6 @@ uniqueTurker: function(){
     }
   },
 
-  //function to clear grids before each trial 
-  clear: function(grid){ 
-    var i; 
-    var rowIndex = 0; 
-    var cellIndex = 0; 
-    //clears previous error message
-    document.getElementById("error").innerHTML = "";
-    //clears highlighted cells
-    for(i=0; i<64; i++){
-      var gridElement = document.getElementById(grid).rows[rowIndex].cells[cellIndex];
-      if(gridElement.classList == "clicked"){
-        gridElement.classList.remove("clicked");
-      }
-      cellIndex++; 
-      if(cellIndex == 8) {
-        rowIndex++;
-        if(rowIndex == 8){
-          return; 
-        } else{
-          cellIndex = 0; 
-        }
-      } 
-    }
-  },
 
   //makes dinging sound
   ding: function(){
@@ -659,29 +407,6 @@ uniqueTurker: function(){
     }, 1000);
   },
 
-  //displays visual mask for X seconds 
-  mask: function(){
-    showSlide("mask");
-    //CHANGE ME BEFORE PILOT ******
-    setTimeout(function(){ experiment.input() }, 3000);
-  },
-
-  //adds specific color for each trial
-  colorAdd: function(color){
-  	var trialGrid = document.getElementById("trialGrid");
-    var trialInput = document.getElementById("trialInput");
-    document.getElementById("blockCount").style.backgroundColor = color;
-    trialGrid.classList.add(color);
-    trialInput.classList.add(color);
-  },
-
-  //removes color (similar to clear function)
-  colorRemove: function(){
-  	var trialGrid = document.getElementById("trialGrid");
-    var trialInput = document.getElementById("trialInput");
-    trialGrid.classList.remove("aqua", "purple", "olive", "green", "pink", "blue", "orange", "lime", "teal", "navy", "maroon", "red", "yellow");
-    trialInput.classList.remove("aqua", "purple", "olive", "green", "pink", "blue", "orange", "lime", "teal", "navy", "maroon", "red", "yellow");
-  },
 
   //displays target slide, stores data, handles counter for trials and ends study when 10 trials have passed 
   begin: function(){
@@ -817,36 +542,6 @@ uniqueTurker: function(){
     experiment.begin();
   },
 
-  //function that shows error message/stops from continuing if less than 10 items are selected (prevents too much simplification)
-  //together with max10items ensures that the user selects EXACTLY 10 items each trial
-  min10Items: function(input){
-    var rowIndex = 0;
-    var cellIndex = 0;
-    var i;
-    var count = 0;
-    for(i=0; i<64; i++){
-      var gridElement = document.getElementById(input).rows[rowIndex].cells[cellIndex];
-      if(gridElement.className == "clicked"){
-        count++;
-      }
-      cellIndex++;
-      if(cellIndex == 8) {
-        rowIndex++;
-        if(rowIndex == 8){
-          if(count < 10){
-            errorSound.play();
-            $(error).html('<font color="red"><strong>You must select 10 items before continuing. Please try again<strong></font>');
-            return;   
-          } else{
-            experiment.playSound();
-            return;
-        }} else{
-          cellIndex = 0; 
-        } 
-      }
-    } 
-  },
-
   //called on "ready for next trial" click; plays sounds if applicable before moving onto next trial
   playSound: function(){
     if(experiment.trialCount == 5){
@@ -875,94 +570,6 @@ uniqueTurker: function(){
     } 
   },
 
-
-  //for very first training trial only; makes it so you cannot move on unless grids are exactly the same; so this checks the grids for accuracy 
-  checkGrid: function(input, target, error){
-    console.log("running2");
-    var rowIndex= 0;
-    var cellIndex= 0;
-    var i;
-    var count=0;
-    var accuracy=0; 
-    for(i=0; i<64; i++) {
-      var inputElement = document.getElementById(input).rows[rowIndex].cells[cellIndex];
-      var targetElement = document.getElementById(target).rows[rowIndex].cells[cellIndex];
-     //checks if the target cell is clicked or not
-      if(targetElement.className == 'clicked'){
-        //if target cell clicked, check if input cell is also clicked [RIGHT]
-        if(inputElement.className == 'clicked'){
-          //if yes, increase cell index by 1 (search next cell)
-          cellIndex++;
-          accuracy++; 
-          //if no, display error message
-        } else {
-          if(experiment.trialCount != 1 && experiment.trialCount != 2 &&  experiment.trialCount != 2.5){
-          training_1_error.play();
-          $(error).html('<font color="red"><strong>The two grids should be the same. Please try again<strong></font>');
-          return;
-          } else{
-            cellIndex++;
-          }
-        }
-      //if the target cell is NOT clicked
-      } else {
-        //and the input cell IS clicked [WRONG]
-        if(inputElement.className =='clicked'){
-          //display error message
-          if(experiment.trialCount != 1 && experiment.trialCount != 2 && experiment.trialCount != 2.5){
-          training_1_error.play();
-          $(error).html('<font color="red"><strong>The two grids should be the same. Please try again<strong></font>');
-          return;
-          }else{
-            cellIndex++;
-          }
-        } else {
-          //move on!
-          cellIndex++;
-        } 
-      }
-     //move onto next row if you need to
-      if(cellIndex == 8) {
-        rowIndex++;
-        //if you are at the end of the grid, either move on to the next training session (T2 or T3, or move onto the actual study trials)
-        if(rowIndex == 8){
-          showSlide("expIntro"); 
-          sparkle.play();     
-            $(practiceIntro).html('<p class = "block-text">Now you will try to fix a grid from memory.</p><p class = "block-text"> A target grid will appear for <strong>10</strong> seconds. Your job is to remember where the colors are located in this grid to the best of your ability. You may also click the colors to hear a sound. Next, an image will appear, and then you will see a grid.</p><p class = "block-text"> <strong>Your job is to correct this grid to match the target you previously saw.</p></strong><p class = "block-text"> When you are satisfied with your re-creation, click the button to display the next target grid. There will be 3 practice trials before we start the study.</p>'); 
-        }  else{
-          cellIndex = 0; 
-        }
-      }
-    }
-    if(experiment.trialCount == 2){
-      experiment.training_1_accuracy = accuracy/10; 
-      console.log(experiment.training_1_accuracy);
-    } if(experiment.trialCount == 2.5){
-      experiment.training_2_accuracy = accuracy/10;
-      console.log(experiment.training_2_accuracy); 
-    }
-  },
-
-  //checks whether first slide is filled out completely [ONLY APPLICABLE ON CHILD TRIALS]
-  checkInput: function() {
-    //subject ID
-    if (document.getElementById("subjectID").value.length < 1) {
-      $("#checkMessage").html('<font color="red">You must input a subject ID</font>');
-      errorSound.play();
-      return;
-    }
-    //stores info in variable
-    experiment.subid = document.getElementById("subjectID").value;
-    //age
-    if (document.getElementById("age").value.length < 1) {
-      errorSound.play();
-      $("#checkMessage").html('<font color="red">You must input a subject age</font>');
-      return;
-    }
-    experiment.subage = parseInt(document.getElementById("age").value);
-    //goes to training slide
-    experiment.loadIteratedData();
-  },
 }
 
 
