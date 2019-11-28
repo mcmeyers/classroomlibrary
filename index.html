@@ -14,7 +14,7 @@
 <audio id="errorSound" src="sounds/error.mp3"></audio>
 
 
-<body onload="showSlide('main');">
+<body onload="showSlide('main'); experiment.loadLibData();">
 
 <!-- MAIN HOMEPAGE -->
 <div class="slide" id="main">
@@ -161,6 +161,8 @@
 <!--connects to javascript file which has actual experiment code on it. This line of info is very important and without it none of your functions will run. They are all written in a separate file for clarity and stuff. -->
 <script src="jquery-1.11.2.min.js"></script>
 <script src="classlib.js"></script> <!--CHANGE TO ILL_OBFU ON TURK WHEN READY -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
 
 
 

@@ -80,154 +80,42 @@ var experiment = {
   ////////VARIABLES
 
   //bkgd
-  subid: Math.random(1,100), 
-  subage:0,
-  generation:1,
   date: getCurrentDate(),
   timestamp: getCurrentTime(), 
-  seed:0,
-  available_onload:1,
-  available_accepted:1,
-  parent_id:0,
-  timedOut:0, 
-  condition:"",
-  training_accuracy:1,
-  training_1_accuracy:1,
-  training_2_accuracy:1, 
-
   //storing data 
-  dataforRound:" ",
   data:[],
+  title:[],
+  author:[],
+  status:[],
+  person:[],
 
-  //initializes other useful variables
-  trialCount:0, //# of trials completed
-  trial:0, //actual trial sequence that is displayed
-  timeUsed:0, //time used from timer
 
-  ////////FUNCTIONS 
-  reserveDate: function(unique_id, ip) {
-    console.log(unique_id); 
-    console.log(ip);
+  ////////FUNCTIONS  
+
+  //reads in data from Google Sheet 
+  loadLibData: function(){
+    console.log("running");
+  //makes request to sheet
     request = $.ajax({
       url: "https://script.google.com/macros/s/AKfycbwfMe0OlnSbShDRjONVtu0U1tCrXyfx5DH7Q4G7mtjmXDw1FZY/exec",
       type: "get", 
       dataType: "json",
-      data: {type: "reserve", unique_id: unique_id, ip: ip}  
-    }); 
-
-    request.done(function (data){
-      // log a message to the console
-      experiment.parent_id = data; 
-      //IF THERE IS AN AVAILABLE ROW WHERE GENERATION IS NOT MAXED OUT 
-      console.log(data);
-      //IF THERE ARE NO AVAILABLE ROWS--ERROR MESSAGE 
-      if(data == 0){ 
-        console.log("there was no available data at all, spitting out an error message");
-        showSlide("limbo");
-      }
-    });
-  }, 
-
-  //reads in data from Google Sheet 
-  loadIteratedData: function(){
-    console.log("running");
-  //makes request to sheet
-    request = $.ajax({
-      url: "https://script.google.com/macros/s/AKfycbym5ORQpTW0gSFmRQsNWuGdPyuXe55ewgS8Da-XBxUnRBlPlyjw/exec",
-      type: "get", 
-      dataType: "json",
-      data: {type: experiment.parent_id, unique_id: unique_id}, 
+      data: {}, 
     }); 
     request.done(function (data){
-      // log a message to the console
+      //loads data from google sheet and saves to particular variables 
       experiment.data = data; 
-      //IF THERE IS AN AVAILABLE ROW WHERE GENERATION IS NOT MAXED OUT 
-      if(experiment.data != 0 & experiment.data[5] != 6 & experiment.data[6] != 0){  
-        experiment.changeTargets(); 
-        experiment.generation = experiment.data[5]+ 1;
-        experiment.seed = experiment.data[6];
-        experiment.parent_id = data[0];
-        experiment.unique_id = data[2];
-        console.log("there was data available!");
-        console.log(data);
-      } 
-      //IF THERE ARE NO AVAILABLE ROWS--ERROR MESSAGE 
-      if(experiment.data == 0){ 
-        console.log("there was no available data at all, spitting out an error message");
-        showSlide("limbo");
-      }
+
+	  experiment.title = experiment.data.map(function(value,index) { return value[0]; });
+	  experiment.author = experiment.data.map(function(value,index) { return value[1]; });
+	  experiment.status = experiment.data.map(function(value,index) { return value[6]; });
+	  experiment.person = experiment.data.map(function(value,index) { return value[7]; });
+
+      console.log(data);
     }); 
-    experiment.startTrain();
+
   },
 
-  
-  //takes in data read from Google Sheet and creates correct target grids from it 
-  changeTargets: function(){
-    for(i=0; i<7; i++){
-      if(experiment.data[21] == i+1){
-        trialNames[i] = experiment.createGrid(experiment.data[24]);
-        break; 
-      }
-    };
-    for(i=0; i<7; i++){
-      if(experiment.data[26] == i+1){
-        trialNames[i] = experiment.createGrid(experiment.data[29]);
-        break;
-      }
-    };
-    for(i=0; i<7; i++){
-      if(experiment.data[31] == i+1){
-        trialNames[i] = experiment.createGrid(experiment.data[34]);
-        break;
-      }
-    };
-    for(i=0; i<7; i++){
-      if(experiment.data[36] == i+1){
-        trialNames[i] = experiment.createGrid(experiment.data[39]);
-        break;
-      }
-    };
-    for(i=0; i<7; i++){
-      if(experiment.data[41] == i+1){
-        trialNames[i] = experiment.createGrid(experiment.data[44]);
-        break;
-      }
-    };
-    for(i=0; i<7; i++){
-      if(experiment.data[46] == i+1){
-        trialNames[i] = experiment.createGrid(experiment.data[49]);
-        break;
-      }
-    };
-    for(i=0; i<7; i++){
-      if(experiment.data[51] == i+1){
-        trialNames[i] = experiment.createGrid(experiment.data[54]);
-        break;
-      }
-    };
-    console.log(trialNames);
-    return trialNames; 
-  },
-
-  //starts training session 1 
-  startTrain: function() {
-    showSlide("training1");
-    //puts in headers for Turk data file 
-    experiment.data.push("unique_id, parent_id, child_id, sub_id, age, generation, seed, condition, date, time, trial1Count, trial1Display, input1Time, trial1Target, trial1Data, trial2Count, trial2Display, input2Time, trial2Target, trial2Data, trial4Count, trial4Display, input4Time, trial4Target, trial4Data,trial5Count, trial5Display, input5Time, trial5Target, trial5Data,trial6Count, trial6Display, input6Time, trial6Target, trial6Data,trial7Count, trial7Display, input7Time, trial7Target, trial7Data, trial8Count, trial8Display, input8Time, trial8Target, trial8Data,trial9Count, trial9Display, input9Time, trial9Target, trial9Data,available_onload, available_accepted");
-    //disables scrolling
-    document.ontouchmove=function(event){
-      event.preventDefault();
-    };
-    //makes ding sound on click
-    $("#t1Target td.clicked").click(function(){
-      ding.play();
-    });
-    //highlights clicked cells, enables max 10 items
-    $("#t1Input td").click(function(){
-      experiment.max10items(this,'t1Input');
-    });
-  },
-  
   sparkle: function(){
     sparkle.play(); 
   },
@@ -268,28 +156,6 @@ var experiment = {
   end: function(){
     showSlide("end");
     experiment.submit(); 
-  },
-
-  //function that fills the target grid with array coordinates 
-  fillGrid: function(input, trialArray){
-    var i; 
-    var rowIndex = 0; 
-    var cellIndex = 0; 
-    for(i=0; i<64; i++){
-      var gridElement = document.getElementById(input).rows[rowIndex].cells[cellIndex];
-      if (trialArray[rowIndex][cellIndex] == 1){
-        gridElement.classList.add("clicked");
-      }    
-      cellIndex++;
-      if(cellIndex == 8) {
-        rowIndex++;
-        if(rowIndex == 8){
-          return; 
-        } else{
-          cellIndex = 0;
-        }
-      }
-    }
   },
 
 
@@ -379,33 +245,6 @@ var experiment = {
     }
   },
 
-  //function that creates input grid for trials; sets up timer
-  input: function(){
-    //clears data from previous input
-    experiment.clear("trialInput"); 
-    showSlide("input");
-    //creates clickable array 
-    if(experiment.trialCount == 1){
-      $("#trialInput td").click(function(){
-        experiment.max10items(this,'trialInput');
-      });
-      training_2.play();
-    }
-    //sets up timer
-    var count = 60;
-    timer = setInterval(function() {
-    $("#count").html(count--);
-    experiment.timeUsed = 60-count;
-    if(count == 25){
-      timeout.play();
-    } 
-    if(count == -1) {
-      experiment.begin(); 
-      clearInterval(timer);
-      $("#count").html(60);
-    }
-    }, 1000);
-  },
 
 
   //displays target slide, stores data, handles counter for trials and ends study when 10 trials have passed 
@@ -530,17 +369,7 @@ var experiment = {
     }
   },
 
-  //resets timer & calls function to begin again after each trial
-  keepGoing: function(){
-    if(experiment.trialCount == 5 || experiment.trialCount == 6||experiment.trialCount == 8){
-      $("#trialInput td").click(function(){
-        experiment.max10items(this,'trialInput');
-      });
-    }
-    clearInterval(timer);
-    $("#count").html(60);
-    experiment.begin();
-  },
+
 
   //called on "ready for next trial" click; plays sounds if applicable before moving onto next trial
   playSound: function(){

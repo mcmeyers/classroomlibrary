@@ -1,0 +1,111 @@
+//  1. Enter sheet name where data is to be written below
+var SHEET_NAME = "Sheet1";
+         
+//  2. Run > setup
+//
+//  3. Publish > Deploy as web app 
+//    - enter Project Version name and click 'Save New Version' 
+//    - set security level and enable service (most likely execute as 'me' and access 'anyone, even anonymously) 
+//
+//  4. Copy the 'Current web app URL' and post this in your form/script action 
+//
+//  5. Insert column names on your destination sheet matching the parameter names of the data you are passing in (exactly matching case)
+ 
+var SCRIPT_PROP = PropertiesService.getScriptProperties(); // new property service
+
+//This should either be called at the beginning of the load to get all the data in the sheet, or should be called when something is searched to get search data -- probably easier to call at beginning onload                       
+function doGet(e){                      
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(15000);  // wait 15 seconds before conceding defeat.
+  
+  try {
+    var doc = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
+    var sheet = doc.getSheetByName(SHEET_NAME);
+    
+    // we'll assume header is in row 1 but you can override with header_row in GET/POST data
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]; 
+    var data2 = sheet.getRange(1, sheet.getLastRow(), 1, sheet.getLastColumn()).getValues()[0]; //get the data (again)
+   
+    var data = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn()).getValues(); 
+       
+    return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+  }
+  catch(e){
+    // if error return this
+    return ContentService
+          .createTextOutput(JSON.stringify({"result":"error", "error": e}))
+          .setMimeType(ContentService.MimeType.JSON);
+ } finally { //release lock
+    lock.releaseLock();
+ }
+}
+
+//We want this to be called when a user checks out or returns a book -- it will find that particular book and change the status and person columns
+function doPost(e){ 
+  var lock = LockService.getScriptLock();
+  lock.waitLock(15000);  // wait 15 seconds before conceding defeat.
+   
+  try {
+    var doc = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
+    var sheet = doc.getSheetByName(SHEET_NAME);
+     
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];  
+    
+    var status_column = headers.indexOf("status")+1; 
+    var person_column = headers.indexOf("person")+1; 
+    var title_column = headers.indexOf("title")+1;
+    
+    //get the title column to change
+    var title = sheet.getRange(2, title_column, sheet.getLastRow()-1).getValues();
+   
+    //if checking out book, change column to checked out and person to person who checked it out
+    if(e.parameter["type"] == "checkout"){
+    for (i in title){
+      if (title[i][0] == e.parameter["title"]){ //finds the book title row
+        var book_row = parseInt(i)+2;
+        sheet.getRange(next_row, status_column).setValue(new Date()) //set the checked out column to current date
+        sheet.getRange(book_row, person_column).setValue(e.parameter["person"]) // set to student name/number
+        sheet.getRange(book_row, person_column).setNumberFormat(e.parameter["person"]); 
+        break;
+      }
+    } 
+    }
+    
+    //if checking in book, change column to checked in and person to blank
+    if(e.parameter["type"] == "checkin"){
+    for (i in title){
+      if (title[i][0] == e.parameter["title"]){ //finds the book title row
+        var book_row = parseInt(i)+2;
+        sheet.getRange(book_row, status_column).setValue(0) // set to CHECKED IN
+        sheet.getRange(book_row, status_column).setNumberFormat("0"); 
+        sheet.getRange(book_row, person_column).setValue(0) // set to blank
+        sheet.getRange(book_row, person_column).setNumberFormat(0); 
+        break;
+      }
+    } 
+    }
+  } catch(e){
+    // if error return this
+    return ContentService
+          .createTextOutput(JSON.stringify({"result":"error", "error": e}))
+          .setMimeType(ContentService.MimeType.JSON);
+  } finally { //release lock
+    lock.releaseLock();
+  }
+}
+
+
+function date_diff_minutes (d1, d2) {
+  var diff = d2 - d1;
+  return parseInt(diff / (60*1000));
+}
+
+function setup() {
+    var doc = SpreadsheetApp.getActiveSpreadsheet();
+    SCRIPT_PROP.setProperty("key", doc.getId());
+  
+  
+}
