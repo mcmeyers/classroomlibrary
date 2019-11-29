@@ -155,12 +155,18 @@ var experiment = {
   			books[i-1] = experiment.data[i][0];
   			//creates button for the book
   			var btn = document.createElement("button");
+  		//	btn.type = 'image';
+  		//	btn.width = "100";
+  			//btn.src = "https://cdn.pixabay.com/photo/2014/04/02/10/40/book-304187_1280.png";
+			var src = document.getElementById("header");
   			//sets button attributes, makes draggable
-  			btn.classList.add("btn");
-  			btn.classList.add("blue");
+  			btn.classList.add('btn');
+  			btn.classList.add('rounded');
+  			btn.classList.add('red');
   			btn.setAttribute('draggable', true);
-  			btn.innerHTML = books[i-1];                   // Insert text
-			document.body.appendChild(btn);
+
+  			btn.innerHTML = books[i-1];
+  			src.appendChild(btn);               // Insert text
   		}
   	}
   },
